@@ -2,82 +2,95 @@ function id(element) {
 	return document.getElementById(element);
 }
  
-         
-            
 document.addEventListener("deviceready", onDeviceReady, false);
  
 function onDeviceReady() {
-    geolocationApp=new geolocationApp();
-    geolocationApp.run();
+	geolocationApp = new geolocationApp();
+	geolocationApp.run();
     
 }
  
+function geolocationApp() {
+}
 
-
-function geolocationApp(){}
-
-geolocationApp.prototype={
-    _watchID:null,
+geolocationApp.prototype = {
+	_watchID:null,
     
-    run:function(){
-        var that=this;
-        document.getElementById("watchButton").addEventListener("click", that._handleWatch, false);
-	    document.getElementById("refreshButton").addEventListener("click", that._handleRefresh, false);
-    },
+	run:function() {
+		var that = this;
+		document.getElementById("watchButton").addEventListener("click", function() {
+			that._handleWatch.apply(that, arguments);
+		}, false);
+		document.getElementById("refreshButton").addEventListener("click", function() {
+			that._handleRefresh.apply(that, arguments);
+		}, false);
+	},
     
-    _handleRefresh:function() {
-        var options = {
-    			enableHighAccuracy: true
-    		};
-    	navigator.geolocation.getCurrentPosition(geolocationApp._onSuccess, geolocationApp._onError,options);
-    },
+	_handleRefresh:function() {
+		var options = {
+			enableHighAccuracy: true
+		},
+		that = this;
+		navigator.geolocation.getCurrentPosition(function() {
+			that._onSuccess.apply(that, arguments);
+		}, function() {
+			that._onError.apply(that, arguments);
+		}, options);
+	},
     
-    _handleWatch:function() {
-    	// If watch is running, clear it now. Otherwise, start it.
-    	var button = document.getElementById("watchButton");
+	_handleWatch:function() {
+		var that = this,
+		// If watch is running, clear it now. Otherwise, start it.
+		button = document.getElementById("watchButton");
                      
-        if (geolocationApp._watchID != null) {
-    		geolocationApp._setResults();
-    		navigator.geolocation.clearWatch(geolocationApp._watchID);
-    		geolocationApp._watchID = null;
+		if (that._watchID != null) {
+			that._setResults();
+			navigator.geolocation.clearWatch(that._watchID);
+			that._watchID = null;
                          
-    		button.innerHTML = "Start Geolocation Watch";
-    	} else {
-    		geolocationApp._setResults("Waiting for geolocation information...");
-    		// Update the watch every second.
-    		var options = {
-    			frequency: 1000,
-    			enableHighAccuracy: true
-    		};
-    		geolocationApp._watchID = navigator.geolocation.watchPosition(geolocationApp._onSuccess, geolocationApp._onError, options);
-    		button.innerHTML = "Clear Geolocation Watch";
+			button.innerHTML = "Start Geolocation Watch";
+		}
+		else {
+			that._setResults("Waiting for geolocation information...");
+			// Update the watch every second.
+			var options = {
+				frequency: 1000,
+				enableHighAccuracy: true
+			};
+			that._watchID = navigator.geolocation.watchPosition(function() {
+				that._onSuccess.apply(that, arguments);
+			}, function() {
+				that._onError.apply(that, arguments);
+			}, options);
+			button.innerHTML = "Clear Geolocation Watch";
             
-    	}
-    },
+		}
+	},
     
-    _onSuccess:function(position) {
-    	// Successfully retrieved the geolocation information. Display it all.
+	_onSuccess:function(position) {
+		// Successfully retrieved the geolocation information. Display it all.
         
-    	geolocationApp._setResults('Latitude: ' + position.coords.latitude + '<br />' +
-    			   'Longitude: ' + position.coords.longitude + '<br />' +
-    			   'Altitude: ' + position.coords.altitude + '<br />' +
-    			   'Accuracy: ' + position.coords.accuracy + '<br />' +
-    			   'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '<br />' +
-    			   'Heading: ' + position.coords.heading + '<br />' +
-    			   'Speed: ' + position.coords.speed + '<br />' +
-    			   'Timestamp: ' + new Date(position.timestamp) + '<br /><hr/>');
-    },
+		this._setResults('Latitude: ' + position.coords.latitude + '<br />' +
+						 'Longitude: ' + position.coords.longitude + '<br />' +
+						 'Altitude: ' + position.coords.altitude + '<br />' +
+						 'Accuracy: ' + position.coords.accuracy + '<br />' +
+						 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '<br />' +
+						 'Heading: ' + position.coords.heading + '<br />' +
+						 'Speed: ' + position.coords.speed + '<br />' +
+						 'Timestamp: ' + new Date(position.timestamp) + '<br /><hr/>');
+	},
     
-    _onError:function(error) {
-    	geolocationApp._setResults('code: ' + error.code + '<br/>' +
-    			   'message: ' + error.message + '<br/>');
-    },
+	_onError:function(error) {
+		this._setResults('code: ' + error.code + '<br/>' +
+						 'message: ' + error.message + '<br/>');
+	},
     
-    _setResults:function(value) {
-    	if (!value) {
-    		document.getElementById("results").innerHTML = "";
-    	} else {
-    		document.getElementById("results").innerHTML = value;
-    	}
-    },
+	_setResults:function(value) {
+		if (!value) {
+			document.getElementById("results").innerHTML = "";
+		}
+		else {
+			document.getElementById("results").innerHTML = value;
+		}
+	},
 }
