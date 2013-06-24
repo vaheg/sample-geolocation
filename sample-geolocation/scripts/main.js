@@ -77,7 +77,7 @@ geolocationApp.prototype = {
 						 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '<br />' +
 						 'Heading: ' + position.coords.heading + '<br />' +
 						 'Speed: ' + position.coords.speed + '<br />' +
-						 'Timestamp: ' + new Date(position.timestamp).toLocaleTimeString().split(" ")[0] + '<br /><hr/>');
+						 'Timestamp: ' + new Date(position.timestamp).toLocaleTimeString().split(" ")[0] + '<br />');
 	},
     
 	_onError:function(error) {
